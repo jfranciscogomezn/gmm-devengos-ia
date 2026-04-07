@@ -105,6 +105,7 @@ All artifacts complete. All tasks complete.
 ```
 
 **Guardrails**
+- After archiving, remind the user that **implementation** of the next increment should use a **new Git feature branch** and a **Pull Request** approved by the maintainer before merge (`ai-specs/specs/git-workflow.mdc`).
 - Always prompt for change selection if not provided
 - Use artifact graph (openspec status --json) for completion checking
 - Don't block archive on warnings - just inform and confirm

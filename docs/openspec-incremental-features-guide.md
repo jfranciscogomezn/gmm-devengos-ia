@@ -189,3 +189,4 @@ Best practice: **one** repo that owns `openspec/` + `docs/` + `requirements/` so
 | Date | Change |
 |------|--------|
 | 2026-04-06 | Initial guide for greenfield + incremental OpenSpec workflow. |
+| 2026-04-07 | Documented archived epic path; checklist step for Git feature branch + PR / maintainer approval. |

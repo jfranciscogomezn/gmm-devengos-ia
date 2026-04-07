@@ -134,3 +134,4 @@ gmm-devengos/
 | Date | Change |
 |------|--------|
 | 2026-04-06 | Initial incremental architecture document (Phase 1 = security module as implemented). |
+| 2026-04-07 | OpenSpec epic archived; active feature changes listed (`feature-payroll-config`, etc.). |
