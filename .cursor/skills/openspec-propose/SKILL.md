@@ -103,6 +103,7 @@ After completing all artifacts, summarize:
   - These guide what you write, but should never appear in the output
 
 **Guardrails**
+- **Git:** When implementation starts (`/opsx:apply` or equivalent), work MUST use a **new feature branch** and land via **Pull Request** with **maintainer approval** before merge (`ai-specs/specs/git-workflow.mdc`).
 - Create ALL artifacts needed for implementation (as defined by schema's `apply.requires`)
 - Always read dependency artifacts before creating a new one
 - If context is critically unclear, ask the user - but prefer making reasonable decisions to keep momentum
