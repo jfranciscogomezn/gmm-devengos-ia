@@ -1,0 +1,247 @@
+---
+description: Java/Spring Boot backend development standards, best practices, and conventions including SOLID, DRY, TDD, OpenAPI, PostgreSQL, and Docker integration.
+globs: ["**/src/main/java/**/*.java", "**/src/test/java/**/*.java", "**/src/main/resources/application*.yml", "**/pom.xml", "**/build.gradle", "**/Dockerfile", "**/docker-compose.yml", "**/openapi/*.yaml"]
+alwaysApply: true
+---
+
+# Java Spring Boot Expert Developer Standards
+
+## Table of Contents
+
+- [Overview](#overview)
+- [Code Format](#code-fromatting)
+- [Java Style](#java-style)
+- [Lombok Style](#lombok-annotations)
+- [Annotation Style](#annotations)
+- [Technology Stack](#technology-stack)
+- [Architecture & Design Principles](#architecture--design-principles)
+  - [SOLID & DRY Principles](#solid--dry-principles)
+  - [Layered Architecture](#layered-architecture)
+- [Coding Standards](#coding-standards)
+  - [Naming Conventions](#naming-conventions)
+  - [Java Usage & Best Practices](#java-usage--best-practices)
+- [Mappers instructions](#mappersas-a-development-team-choose-mapstruct-or-strictly-static-mappers)
+- [API Design (Design-First)](#api-design-design-first)
+- [Database Patterns (PostgreSQL)](#database-patterns-postgresql)
+- [Testing Standards (TDD)](#testing-standards-tdd)
+- [Error Handling & Logging](#error-handling--logging)
+- [DevOps & Workflow](#devops--workflow)
+- [Project Structure](#project-architecture--directory-structure)
+- [Loggin](#logging)
+
+---
+
+## Overview
+
+This document defines the professional standards for Java backend development. It prioritizes maintainability, type safety, and rigorous testing. The goal is to produce "production-grade" code that follows industry-standard patterns and clean code principles.
+
+## Code Fromatting
+
+- Indentation: 4 spaces.
+- Blank Lines: Use to separate logical blocks of code.
+- Line Length: Maximum 120 characters.
+- Use IntelliJ IDEA default code style for Java.
+
+## Java Style
+
+- Use UTF-8 encoding.
+- Use descriptive names for classes, methods, and variables.
+- Avoid `var` keyword, prefer explicit types.
+- All method parameters should be `final`.
+- All variables should be declared as `final` where possible.
+- Preference for immutability:
+- Avoid mutations of objects, specially when using for-each loops or Stream API using `forEach()`.
+- Avoid magic numbers and strings; use constants instead.
+- Check emptiness and nullness before operations on collections and strings.
+- Avoid methods using `throws` clause; prefer unchecked exceptions.
+
+- Avoid comments.
+- Comments could be applied for: cron expressions, Regex patterns, TODOs or given/when/then separation in tests.
+- Use `@Override` annotation when overriding methods.
+- Avoid Objects.*isNull() and Objects.*nonNull() for one or two variables; prefer direct null checks for better performance.
+- Wrap multiple conditions in a boolean variable for better readibility
+- Prefer early returns.
+- Avoid else statements when not necessary and try early returns.
+
+## Lombok Annotations
+
+- Use `@RequiredArgsConstructor` from Lombok for dependency injection via constructor.
+- Use `@Slf4j` from Lombok for logging.
+- Use `@Builder(setterPrefix = "with"))` for complex object creation.
+- Avoid `@Data` annotation; prefer `@Getter` and `@Setter` for granular control.
+
+## Annotations
+
+- **`@Service`**: For business logic classes.
+- **`@Repository`**: For data access classes that extend JPA repositories or interact with the database.
+- **`@RestController`**: For web controllers.
+- **`@Component`**: For generic Spring components.
+- **`@Configuration`**: For Spring configuration classes.
+- **`@Autowired`**: Prefer constructor injection for production code and field injection only for tests.
+- **`@ConfigurationProperties`**: For binding related properties avoid multiple `@Value` annotations. From more than 2 properties, consider using this annotation.
+- **`@Transactional`**: Only Service classes should be annotated with @Transactional at class level to avoid transaction management in each method.
+- **`@Validated`**: To enable Bean Validation in method parameters or classes.
+- **`@PreAuthorize`**: at the controller layer when using Spring Security to enforce method-level security.
+- Circular dependencies should be avoided. Avoid `@Order` annotation for dependency resolution.
+
+## Technology Stack
+
+- **Core:** Java 17+ (utilizing Records, Sealed Classes, and Switch Expressions).
+- **Framework:** Spring Boot 3.x (Spring Data JPA, Spring Security, Spring Web).
+- **Database:** PostgreSQL.
+- **Migration:** Flyway or Liquibase for versioned schema changes.
+- **Documentation:** OpenAPI 3.0 / Swagger.
+- **Testing:** JUnit 5, Mockito, AssertJ, and Testcontainers.
+- **Containerization:** Docker (Multi-stage builds).
+
+## Architecture & Design Principles
+
+### SOLID & DRY Principles
+- **Single Responsibility (SRP):** Each class (Service, Controller, Repository) must have one reason to change.
+- **Open/Closed (OCP):** Use interfaces for extensibility without modifying existing logic.
+- **Dependency Inversion (DIP):** Always inject dependencies via Constructor. Avoid `@Autowired` on fields.
+- **DRY:** Abstract repetitive logic into Utility classes or Base Services, but avoid "premature abstraction."
+
+### Layered Architecture
+1. **Controller Layer:** Handles HTTP requests, input validation (`@Valid`), and mapping to DTOs.
+2. **Service Layer:** Contains business logic, transaction management (`@Transactional`), and orchestration.
+3. **Domain/Entity Layer:** JPA Entities representing the database schema and business rules.
+4. **Repository Layer:** Spring Data JPA interfaces for data persistence.
+
+## Coding Standards
+
+### Naming Conventions
+- **Classes:** `PascalCase` (e.g., `OrderProcessingService`).
+- **Methods/Variables:** `camelCase` (e.g., `findByCustomerEmail`).
+- **Constants:** `SCREAMING_SNAKE_CASE` (e.g., `MAX_RETRY_ATTEMPTS`).
+- **Packages:** Lowercase, reverse domain name (e.g., `com.company.project.feature`).
+- **Interfaces:** Do not prefix with `I`. Use descriptive names and append `Impl` to implementations only if strictly necessary.
+
+### Java Usage & Best Practices
+- **DTOs:** Use `records` for immutable data transfer objects.
+- **Optionals:** Return `Optional<T>` instead of `null` for search operations. Never use `Optional` as a parameter.
+- **Streams:** Use Functional Programming (Streams API) for collection manipulation for readability.
+
+## Mappers(As a development team choose MapStruct or strictly static Mappers)
+
+**Use MapStruct**
+
+- MapFor mapping between DTOs and entities.
+- Define mapper interfaces with `@Mapper` annotation.
+- Use `@Mapping` annotation for custom field mappings.
+- Use `componentModel = "spring"` to allow Spring to manage mapper instances.
+- Mapper should have as suffix `Mapper` (e.g., `UserMapper`).
+- Name mapper methods clearly (e.g., `toDto`, `toEntity`).
+- Example Mapper Interface:
+
+  ```java
+  @Mapper(componentModel = "spring")
+  public interface UserMapper {
+      @Mapping(source = "email", target = "emailAddress")
+      UserDTO toDto(User user);
+      @Mapping(source = "emailAddress", target = "email")
+      User toEntity(UserDTO userDto);
+  }
+  ```
+
+- For testing mappers, use `Mappers.getMapper(UserMapper.class)` to get an instance of the mapper.
+**Use Static Mappers**
+
+- Define a private constructor to prevent instantiation with `UnsupportedOperationException("This class should never be instantiated")`.
+- Use static methods for mapping between DTOs and entities.
+- Name mapper methods clearly (e.g., `toDto`, `toEntity`).
+- Example Static Mapper Class:
+
+  ```java
+  public class UserMapper {
+      private UserMapper() {
+          throw new UnsupportedOperationException("This class should never be instantiated");
+      }
+      public static UserDTO toDto(final User user) {
+          if (user == null) {
+              return null;
+          }
+          return UserDTO.builder()
+              .withId(user.getId())
+              .withEmailAddress(user.getEmail())
+              .build();
+      }
+      public static User toEntity(final UserDTO userDto) {
+          if (userDto == null) {
+              return null;
+          }
+          return User.builder()
+              .withId(userDto.getId())
+              .withEmail(userDto.getEmailAddress())
+              .build();
+      }
+  }
+  ```
+
+## API Design (Design-First)
+
+- **OpenAPI:** Maintain an `api-docs.yaml` file. Contracts must be defined before implementation.
+- **RESTful Principles:**
+    - Use plural nouns for resources (e.g., `/api/v1/users`).
+    - Use appropriate HTTP Verbs (GET, POST, PUT, DELETE, PATCH).
+- **Versioning:** Always version the API in the URL (e.g., `/v1/`).
+
+## Database Patterns (PostgreSQL)
+
+- **Persistence:** Use Spring Data JPA. Write native queries only when JPQL is insufficient for performance.
+- **Indexing:** Ensure foreign keys and frequently filtered columns are indexed.
+- **Naming:** Database tables and columns should use `snake_case`.
+
+## Testing Standards (TDD)
+
+- **Test-Driven Development:** Follow the **Red-Green-Refactor** cycle.
+- **Unit Tests:** Use JUnit 5 and Mockito. Focus on isolating the unit under test.
+- **Integration Tests:** Use `@SpringBootTest` with `@ActiveProfiles("test")`.
+- **Naming:** Use descriptive test names (e.g., `shouldReturnErrorWhenUserNotFound`).
+- **Assertions:** Use AssertJ for fluent and readable assertions (e.g., `assertThat(result).isEqualTo(expected)`).
+
+## Error Handling & Logging
+
+- **Global Exception Handling:** Use `@ControllerAdvice` and `@ExceptionHandler`.
+- **Response Format:** Errors must return a consistent JSON structure:
+  ```json
+  {
+    "timestamp": "ISO-8601",
+    "status": 404,
+    "error": "Not Found",
+    "message": "User with ID 123 not found",
+    "path": "/api/v1/users/123"
+  }
+
+## Project Architecture & Directory Structure
+
+Follow a clear separation of concerns (Layered or Hexagonal-lite):
+
+  ```text
+src/main/java/com/company/project/
+├── common/             # Global Constants, Shared Utils, Exception Definitions
+├── config/             # SecurityConfig, OpenApiConfig, PersistenceConfig
+├── controller/         # REST Controllers (Presentation Layer)
+│   ├── dto/            # Request/Response Records/DTOs
+│   └── mapper/         # MapStruct or manual mappers
+├── domain/             # Business Domain (Core Layer)
+│   ├── model/          # JPA Entities (PostgreSQL)
+│   └── repository/     # Spring Data JPA Interfaces
+├── service/            # Business Logic (Application Layer)
+│   ├── UserServiceImpl.java
+│   └── UserService.java (Interface)
+├── exception/          # @ControllerAdvice and GlobalExceptionHandler
+└── Application.java    # Main Entry Point
+```
+
+## Logging
+
+- Use `@Slf4j` annotation from Lombok for logging to avoid boilerplate code with Logger instances.
+- Log at appropriate levels: `DEBUG`, `INFO`, `WARN`, `ERROR`.
+- Include contextual information in logs (e.g., request IDs, user IDs).
+- Avoid logging sensitive information.
+- Use structured logging for better log management.
+- Format log messages with placeholders (e.g., `{}`) instead of string concatenation.
+- Logging info code could follow this template: log.info("[MicroserviceName/ModuleName] - API-CALL/METHOD/ACTION: response: {}, userId: {}", body, userId);
+- Logging error code could follow this template: log.error("[MicroserviceName/ModuleName] - API-CALL/METHOD/ACTION: errorMessage: {}, userId: {}", errorMessage, userId);Copy Code
+Recommendations

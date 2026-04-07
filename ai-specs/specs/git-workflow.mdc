@@ -1,0 +1,41 @@
+---
+description: Git branching, pull requests, and merge policy for all contributors and AI agents working on this project.
+alwaysApply: true
+---
+
+## 1. Feature branches (mandatory)
+
+- **Every feature** (or OpenSpec change implementation, bugfix, or ticket) MUST be developed on a **dedicated branch** created from the agreed base branch (`main`, `master`, or `develop` — use the one defined for the target repository).
+- **Branch naming:** use a clear prefix and short slug, for example:
+  - `feature/payroll-config`
+  - `feature/time-tracking`
+  - `fix/login-validation`
+  - `chore/update-openspec-tasks`
+- **Never** commit directly to the protected base branch when implementing product changes; the maintainer may use direct commits only for exceptional repo housekeeping, and even then a branch + PR is preferred.
+
+## 2. Pull requests (mandatory path to `main`)
+
+- **All work** intended for the shared base branch MUST land via a **Pull Request (PR)** opened from the feature branch.
+- The **project owner / maintainer** (human) MUST **review and approve** the PR before merge. AI agents MUST NOT merge on behalf of the owner unless the owner has explicitly delegated merge rights for that action in writing for that session.
+- PRs MUST have:
+  - A **clear title** (English, imperative, optionally scoped: e.g. `Add payroll config Flyway migration`).
+  - A **description** summarizing what changed, why, and how to verify (tests run, manual checks).
+  - Link to the **OpenSpec change** name or path when the work implements a spec-driven feature (e.g. `feature-payroll-config`).
+
+## 3. Agent and automation behavior
+
+- When using GitHub CLI (`gh`), agents SHOULD:
+  1. Create or checkout a feature branch.
+  2. Commit with messages compliant with `base-standards.mdc` (English).
+  3. Push the branch.
+  4. Open a PR with `gh pr create` and leave it **open for maintainer approval**.
+- Agents MUST **not** use `gh pr merge` or equivalent **without explicit user instruction** to merge after approval.
+- If branch protection requires approvals, treat the PR as **blocked** until the human approves in the GitHub UI.
+
+## 4. Alignment with backend / frontend standards
+
+- Backend and frontend standard documents may add suffix conventions (e.g. `-backend`, `-frontend`) for parallel work; those are **in addition** to this policy, not a replacement. Each logical feature still uses its **own branch** and **PR**.
+
+## 5. Multiple repositories
+
+- If backend and frontend live in **separate** Git repositories, apply the same rule **per repository**: one feature branch per repo per slice of work, and PRs in each repo as needed. Cross-repo features should reference related PR URLs in the description.
