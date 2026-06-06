@@ -103,10 +103,7 @@ If your OpenSpec workflow uses **delta specs** under `changes/<name>/specs/`:
 - Each **feature change** carries deltas for **its** capability (`payroll-config`, `employee-config`, …).
 - On **archive**, run your team’s **sync** step (if applicable) to merge deltas into `openspec/specs/<capability>/spec.md`.
 
-If you **do not** use sync yet:
-
-- Delta specs in the change folder are still valuable as **scoped** documentation.
-- Plan to introduce `openspec/specs/` when the first module after the epic is archived.
+**Current repo state:** Canonical specs are maintained under `openspec/specs/` and are synced from archived change deltas (strip `## ADDED Requirements`, add `## Purpose` and `## Requirements` sections). Run `npx openspec validate --specs --strict` after syncing.
 
 ---
 
