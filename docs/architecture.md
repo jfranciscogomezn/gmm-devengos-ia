@@ -4,7 +4,7 @@ This document describes the **system architecture** and **module boundaries** fo
 
 **Authoritative product requirements:** `requirements/requirements-v3.md` (and Human-Usability documents under `hu/`).
 
-**Specification-driven workflow:** OpenSpec changes under `openspec/changes/` (see `docs/openspec-incremental-features-guide.md`). The initial epic is **archived** at `openspec/changes/archive/2026-04-06-gmm-devengos-initial/`. Active implementation increments use `feature-payroll-config`, `feature-employee-config`, `feature-time-tracking`, and `feature-earnings-and-reports`.
+**Specification-driven workflow:** OpenSpec changes under `openspec/changes/` (see `docs/openspec-incremental-features-guide.md`). Completed increments are **archived** under `openspec/changes/archive/`; canonical capability requirements live in `openspec/specs/`. There are **no active** OpenSpec changes at present; new increments should be proposed when the next phase begins.
 
 ---
 
